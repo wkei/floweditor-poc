@@ -6,7 +6,7 @@ type SvgPathProps = {
   from: XY
   to: XY
   active?: boolean
-  onClick: (event: React.MouseEvent) => void
+  onClick?: (event: React.MouseEvent) => void
 }
 export default function SvgPath({
   from,

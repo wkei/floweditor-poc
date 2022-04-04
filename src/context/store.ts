@@ -7,9 +7,34 @@ import { Element, XY, Store, Connecting, Selected } from '../types'
 const INITIAL_STORE: Store = {
   canvasOffset: { x: 0, y: 0 },
   canvasScale: 1,
-  elements: [],
+  elements: [
+    {
+      type: 'square',
+      id: '0db8ca',
+      offset: {
+        x: 161,
+        y: 139,
+      },
+      zIndex: 11,
+    },
+    {
+      type: 'rounded',
+      id: 'a2d027',
+      offset: {
+        x: 554,
+        y: 320,
+      },
+      zIndex: 10,
+    },
+  ],
   newElement: null,
-  connections: [],
+  connections: [
+    {
+      id: '0db8ca-a2d027',
+      from: '0db8ca',
+      to: 'a2d027',
+    },
+  ],
 }
 const STORE_KEY = 'flow-editor'
 export const storeAtom = atomWithStorage<Store>(STORE_KEY, INITIAL_STORE)

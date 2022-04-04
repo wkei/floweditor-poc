@@ -50,8 +50,8 @@ function Connected({ id, from, to }: Connection) {
 }
 
 const svgStyle = css`
-  width: 0.1px;
-  height: 0.1px;
+  width: 1px;
+  height: 1px;
   position: absolute;
   left: 0;
   top: 0;
