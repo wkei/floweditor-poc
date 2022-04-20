@@ -4,7 +4,6 @@ import {
   canvasOffsetAtom,
   canvasScaleAtom,
   connectingAtom,
-  elementsAtom,
   newElementAtom,
   selectedAtom,
   storeAtom,
@@ -47,7 +46,6 @@ export default function Sidebar() {
 
 function Debug() {
   const [store] = useAtom(storeAtom)
-  const [, setElements] = useAtom(elementsAtom)
   const [, setOffset] = useAtom(canvasOffsetAtom)
   const [, setScale] = useAtom(canvasScaleAtom)
   const [connecting] = useAtom(connectingAtom)

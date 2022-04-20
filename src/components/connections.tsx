@@ -1,6 +1,5 @@
 import { css, cx } from '@emotion/css'
 import { useAtom } from 'jotai'
-import React, { useCallback, useRef } from 'react'
 import {
   anchorOffsetsAtom,
   connectingAtom,
@@ -14,7 +13,6 @@ import Connecting from './connecting'
 import SvgPath from './svg-path'
 
 function Connected({ id, from, to }: Connection) {
-  const ref = useRef<SVGGElement>(null)
   const [anchorOffsets] = useAtom(anchorOffsetsAtom)
   const [fromEl] = useAtom(elementFamilyById(from))
   const [toEl] = useAtom(elementFamilyById(to))

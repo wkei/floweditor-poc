@@ -1,7 +1,7 @@
 import { css, cx } from '@emotion/css'
 import { useGesture } from '@use-gesture/react'
 import { useAtom } from 'jotai'
-import { useEffect, useRef, useCallback, useMemo, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import {
   anchorOffsetsAtom,
   canvasOffsetAtom,
@@ -9,7 +9,7 @@ import {
   canvasScaleAtom,
   connectingAtom,
 } from '../context/store'
-import { Direction, Element, XY } from '../types'
+import { Direction, Element } from '../types'
 
 const styles = {
   anchor: css`
@@ -79,6 +79,7 @@ export default function ConnectAnchor({
   useGesture(
     {
       onMouseDown(state) {
+        console.log(state)
         if (direction === 'to') return
         state.event.stopPropagation()
         setConnecting((prev) => ({
@@ -111,6 +112,7 @@ export default function ConnectAnchor({
     {
       target: ref,
       eventOptions: { passive: false },
+      drag: { preventDefault: true },
     },
   )
 

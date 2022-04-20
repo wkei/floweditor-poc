@@ -15,7 +15,6 @@ import Elements from './elements'
 import Connections from './connections'
 
 type ZoomState = FullGestureState<'pinch'> | FullGestureState<'wheel'>
-type MoveState = FullGestureState<'wheel'> | FullGestureState<'drag'>
 
 const SCALE_MIN = 0.5
 
@@ -26,7 +25,7 @@ export default function Canvas() {
   const [, setSelected] = useAtom(selectedAtom)
   const [, setCanvasRect] = useAtom(canvasRectAtom)
   const [spaceKey, setSpaceKey] = useState(false)
-  const [dragging, setDragging] = useState(false)
+  const [dragging] = useState(false)
   const tmp = useRef<any>({})
 
   useEffect(() => {
@@ -79,7 +78,8 @@ export default function Canvas() {
     {
       onWheelStart(state) {
         if (state.event.ctrlKey || state.event.metaKey) {
-          const { left, top } = ref.current!.getBoundingClientRect()
+          if (!ref.current) return
+          const { left, top } = ref.current.getBoundingClientRect()
           tmp.current._origin = {
             x: (state.event as WheelEvent).clientX - left,
             y: (state.event as WheelEvent).clientY - top,
@@ -101,7 +101,8 @@ export default function Canvas() {
         }))
       },
       onPinchStart(state) {
-        const { left, top } = ref.current!.getBoundingClientRect()
+        if (!ref.current) return
+        const { left, top } = ref.current.getBoundingClientRect()
         tmp.current._origin = {
           x: (state as FullGestureState<'pinch'>).origin[0] - left,
           y: (state as FullGestureState<'pinch'>).origin[1] - top,
@@ -129,7 +130,7 @@ export default function Canvas() {
         document.addEventListener('mousemove', handleMove)
         document.addEventListener('mouseup', rmListener)
       },
-      onClick(e) {
+      onClick() {
         setSelected([])
       },
     },

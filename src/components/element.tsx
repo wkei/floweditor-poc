@@ -1,10 +1,9 @@
 import { css } from '@emotion/css'
 import { useGesture } from '@use-gesture/react'
 import { PrimitiveAtom, useAtom } from 'jotai'
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useState } from 'react'
 
 import {
-  bringElementFrontAtom,
   canvasScaleAtom,
   connectingAtom,
   connectionsAtom,
@@ -24,9 +23,7 @@ export default function CanvasElement({ elementAtom }: ElementProps) {
   const [canvasScale] = useAtom(canvasScaleAtom)
   const [, setConnections] = useAtom(connectionsAtom)
   const [connecting, setConnecting] = useAtom(connectingAtom)
-  const [, bringElementFront] = useAtom(bringElementFrontAtom)
   const [hovered, setHovered] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
   const { id, offset, zIndex = 0 } = element
   const [selected] = useAtom(selectedFamilyById(id))
   const [, setSelected] = useAtom(selectedAtom)
@@ -34,32 +31,32 @@ export default function CanvasElement({ elementAtom }: ElementProps) {
 
   const handleMove = useCallback(
     (movement: XY) => {
-      setElement((prev) => ({
-        ...prev,
-        offset: {
-          x: prev.offset.x + movement.x / canvasScale,
-          y: prev.offset.y + movement.y / canvasScale,
-        },
-      }))
+      setElement((prev) => {
+        return {
+          ...prev,
+          offset: {
+            x: prev.offset.x + movement.x, /// canvasScale,
+            y: prev.offset.y + movement.y, /// canvasScale,
+          },
+        }
+      })
     },
     [canvasScale, setElement],
   )
 
-  useGesture(
+  const bindDrag = useGesture(
     {
-      onMouseDown({ event }) {
-        event.stopPropagation()
-        bringElementFront(id)
-        const moveListener = (e: MouseEvent) => {
-          handleMove({ x: e.movementX, y: e.movementY })
-        }
-        const upListener = () => {
-          document.removeEventListener('mousemove', moveListener)
-          document.addEventListener('mouseup', upListener)
-        }
-        document.addEventListener('mousemove', moveListener)
-        document.addEventListener('mouseup', upListener)
+      onDrag({ delta }) {
+        handleMove({ x: delta[0], y: delta[1] })
       },
+    },
+    {
+      drag: { preventDefault: true, filterTaps: true },
+    },
+  )
+
+  const bindHoverState = useGesture(
+    {
       onMouseEnter() {
         setHovered(true)
         if (connecting.from && connecting.from.id !== id) {
@@ -70,7 +67,7 @@ export default function CanvasElement({ elementAtom }: ElementProps) {
           }))
         }
       },
-      onMouseLeave({ event }) {
+      onMouseLeave() {
         setHovered(false)
         if (connecting.to?.id === id) {
           setConnecting((prev) => {
@@ -93,15 +90,13 @@ export default function CanvasElement({ elementAtom }: ElementProps) {
       },
     },
     {
-      target: ref,
       eventOptions: { passive: false },
-      drag: { preventDefault: true },
     },
   )
 
   return (
     <div
-      ref={ref}
+      {...bindHoverState()}
       data-testid="element"
       className={css`
         position: absolute;
@@ -114,11 +109,13 @@ export default function CanvasElement({ elementAtom }: ElementProps) {
         }
       `}
     >
-      <Box type={element.type} active={active}>
-        <pre>id: {id}</pre>
-        <pre>x: {offset.x}</pre>
-        <pre>y: {offset.y}</pre>
-      </Box>
+      <div {...bindDrag()}>
+        <Box type={element.type} active={active}>
+          <pre>id: {id}</pre>
+          <pre>x: {offset.x}</pre>
+          <pre>y: {offset.y}</pre>
+        </Box>
+      </div>
       <ConnectAnchor element={element} direction="from" active={active} />
       <ConnectAnchor element={element} direction="to" active={active} />
     </div>
