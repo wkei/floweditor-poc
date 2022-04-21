@@ -9,6 +9,7 @@ import {
   connectionsAtom,
   selectedAtom,
   selectedFamilyById,
+  bringElementFrontAtom,
 } from '../context/store'
 import { Element, XY } from '../types'
 import Box from './box'
@@ -27,6 +28,7 @@ export default function CanvasElement({ elementAtom }: ElementProps) {
   const { id, offset, zIndex = 0 } = element
   const [selected] = useAtom(selectedFamilyById(id))
   const [, setSelected] = useAtom(selectedAtom)
+  const [, bringElementFront] = useAtom(bringElementFrontAtom)
   const active = hovered || connecting.from?.id === id || !!selected
 
   const handleMove = useCallback(
@@ -46,6 +48,10 @@ export default function CanvasElement({ elementAtom }: ElementProps) {
 
   const bindDrag = useGesture(
     {
+      onDragStart() {
+        bringElementFront(id)
+        setSelected([{ type: 'element', id }])
+      },
       onDrag({ delta }) {
         handleMove({ x: delta[0], y: delta[1] })
       },
@@ -85,6 +91,7 @@ export default function CanvasElement({ elementAtom }: ElementProps) {
         }
       },
       onClick({ event }) {
+        bringElementFront(id)
         event.stopPropagation()
         setSelected([{ type: 'element', id }])
       },
